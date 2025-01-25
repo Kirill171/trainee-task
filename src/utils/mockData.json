@@ -1,0 +1,132 @@
+{
+  "preference": null,
+  "pagination": {
+    "total": 42082,
+    "limit": 12,
+    "offset": 0,
+    "total_pages": 3507,
+    "current_page": 1
+  },
+  "data": [
+    {
+      "_score": 116.469284,
+      "is_public_domain": false,
+      "date_start": 1950,
+      "artist_title": "Art Shay",
+      "id": 191358,
+      "image_id": "d141a769-24af-ff07-d792-183ae73ae765",
+      "title": "Nelson Algren Pauses after Another White Sox Loss, Chicago"
+    },
+    {
+      "_score": 116.39851,
+      "is_public_domain": false,
+      "date_start": 1963,
+      "artist_title": "Art Sinsabaugh",
+      "id": 18975,
+      "image_id": "5643d48a-180e-06c0-8d9f-5319d62c1cb3",
+      "title": "Midwest Landscape #73"
+    },
+    {
+      "_score": 115.43407,
+      "is_public_domain": false,
+      "date_start": 1949,
+      "artist_title": "Art Shay",
+      "id": 191353,
+      "image_id": "2658eeb4-ad05-9fb5-5f2e-1fd8ffee9ce0",
+      "title": "Nelson Algren, by his Favorite Division St. Bar, Chicago"
+    },
+    {
+      "_score": 99.54819,
+      "is_public_domain": false,
+      "date_start": 1949,
+      "artist_title": "Art Shay",
+      "id": 191355,
+      "image_id": "bb5e3048-64e5-be99-c575-f89607cd55a9",
+      "title": "Nelson Algren Amuses a New Friend"
+    },
+    {
+      "_score": 96.24793,
+      "is_public_domain": false,
+      "date_start": 1997,
+      "artist_title": "Art Spiegelman",
+      "id": 148407,
+      "image_id": "45b40211-18e7-1153-1b7d-18ddc0272d23",
+      "title": "Crossroads"
+    },
+    {
+      "_score": 93.79378,
+      "is_public_domain": false,
+      "date_start": 1973,
+      "artist_title": "Art Green",
+      "id": 47135,
+      "image_id": "b6b75216-1c22-8431-6ed4-2e5cab135a93",
+      "title": "Diminishing Returns"
+    },
+    {
+      "_score": 92.535835,
+      "is_public_domain": false,
+      "date_start": 1997,
+      "artist_title": "Art Spiegelman",
+      "id": 148406,
+      "image_id": "0102d7f3-0dc3-6f60-88c7-449c8780e32c",
+      "title": "Lead Pipe Sunday #2"
+    },
+    {
+      "_score": 90.33653,
+      "is_public_domain": false,
+      "date_start": 1949,
+      "artist_title": "Art Shay",
+      "id": 191359,
+      "image_id": "6e1ac522-065b-75ae-37ca-484f83974697",
+      "title": "Nelson Algren Playing Cards, Chicago"
+    },
+    {
+      "_score": 90.19309,
+      "is_public_domain": false,
+      "date_start": 1966,
+      "artist_title": "Art Green",
+      "id": 33403,
+      "image_id": "b400b538-c144-f28f-bd6c-3151277fd358",
+      "title": "Death by Suffocation"
+    },
+    {
+      "_score": 89.74587,
+      "is_public_domain": false,
+      "date_start": 1917,
+      "artist_title": "Society of Poster Art",
+      "id": 7962,
+      "image_id": "59320f53-e6a1-4fb7-0246-ff70542460bf",
+      "title": "Buy a Little Present for the Kaiser"
+    },
+    {
+      "_score": 89.68074,
+      "is_public_domain": false,
+      "date_start": 1961,
+      "artist_title": "Art Sinsabaugh",
+      "id": 18978,
+      "image_id": "47b4c521-d651-d04d-c318-8b131e068b96",
+      "title": "Midwest Landscape #4"
+    },
+    {
+      "_score": 89.68074,
+      "is_public_domain": false,
+      "date_start": 1967,
+      "artist_title": "Art Green",
+      "id": 202587,
+      "image_id": "b8ecc545-e71f-9dcb-00aa-5a1891021493",
+      "title": "Da Hairy Who Foyer - For Ya Prince"
+    }
+  ],
+  "info": {
+    "license_text": "The `description` field in this response is licensed under a Creative Commons Attribution 4.0 Generic License (CC-By) and the Terms and Conditions of artic.edu. All other data in this response is licensed under a Creative Commons Zero (CC0) 1.0 designation and the Terms and Conditions of artic.edu.",
+    "license_links": [
+      "https:\/\/creativecommons.org\/publicdomain\/zero\/1.0\/",
+      "https:\/\/www.artic.edu\/terms"
+    ],
+    "version": "1.10"
+  },
+  "config": {
+    "iiif_url": "https:\/\/www.artic.edu\/iiif\/2",
+    "website_url": "http:\/\/www.artic.edu"
+  }
+}
