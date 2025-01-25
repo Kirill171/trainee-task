@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "museum-of-art",
   "version": "1.0.0",
   "main": "index.tsx",
   "scripts": {
@@ -12,7 +12,9 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
     "autoprefixer": "^10.4.20",
+    "axios": "^1.7.9",
     "css-loader": "^7.1.2",
     "postcss": "^8.5.1",
     "postcss-loader": "^8.1.1",
