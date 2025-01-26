@@ -2,12 +2,12 @@ module.exports = {
   content: ['./src/**/*.{html,js,jsx,ts,tsx}'],
   theme: {
     container: {
-      screens: {
-        sm: '375px',
-        md: '768px',
-        lg: '1280px'
-      },
       center: true
+    },
+    screens: {
+      sm: '375px',
+      md: '768px',
+      lg: '1280px'
     },
     extend: {
       fontFamily: {

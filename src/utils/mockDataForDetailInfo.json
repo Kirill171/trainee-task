@@ -1,0 +1,27 @@
+{
+  "data": {
+    "id": 76002,
+    "title": "Mary Cassatt in the Paintings Gallery at the Louvre",
+    "date_start": 1879,
+    "date_end": 1880,
+    "place_of_origin": "France",
+    "dimensions": "Image\/plate: 30.5 \u00d7 12.6 cm (12 1\/16 \u00d7 5 in.); Sheet: 34 \u00d7 17.5 cm (13 7\/16 \u00d7 6 15\/16 in.)",
+    "medium_display": "Etching, soft ground etching, aquatint, and drypoint on grayish-ivory wove paper",
+    "credit_line": "Gift of Walter S. Brewster",
+    "is_public_domain": true,
+    "artist_title": "Hilaire Germain Edgar Degas",
+    "image_id": "5a35948f-77b9-325f-512b-591bdb843c1b"
+  },
+  "info": {
+    "license_text": "The `description` field in this response is licensed under a Creative Commons Attribution 4.0 Generic License (CC-By) and the Terms and Conditions of artic.edu. All other data in this response is licensed under a Creative Commons Zero (CC0) 1.0 designation and the Terms and Conditions of artic.edu.",
+    "license_links": [
+      "https:\/\/creativecommons.org\/publicdomain\/zero\/1.0\/",
+      "https:\/\/www.artic.edu\/terms"
+    ],
+    "version": "1.10"
+  },
+  "config": {
+    "iiif_url": "https:\/\/www.artic.edu\/iiif\/2",
+    "website_url": "http:\/\/www.artic.edu"
+  }
+}
