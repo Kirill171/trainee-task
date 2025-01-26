@@ -1,20 +1,25 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Artwork } from '@/types';
-import bookMarkIcon from '@/assets/bookmark.png';
+import bookMarkIcon from '@/assets/bookmark-2.png';
+import bookMarkFilledIcon from '@/assets/bookmark-3.png';
 import logoHoverIcon from '@/assets/logoHover2.svg';
 import fetchArtworks from '@/api/artworks';
+import { Link } from 'react-router-dom';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 export default function HereSomeMore() {
   const [artworks, setArtworks] = useState<Artwork[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { favorites, toggleFavorite } = useFavorites();
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetchArtworks('Some more', true, 9);
+      const response = await fetchArtworks('Some more', 9);
       setArtworks(response.data);
     } catch (err) {
       setError('Failed to fetch data. Please try again later.');
@@ -101,48 +106,64 @@ export default function HereSomeMore() {
           {artworks.map((artwork: Artwork) => (
             <div
               key={artwork.id}
-              className="flex group gap-4 p-4 bg-white border border-[#F0F1F1] w-[416px] h-[130px] overflow-hidden font-inter"
+              className="mx-auto group bg-white border border-[#F0F1F1] w-[360px] md:w-[370px] lg:w-[416px] h-[130px] overflow-hidden font-inter"
             >
-              <div className="flex items-center justify-center">
-                <img
-                  src={
-                    artwork.image_id
-                      ? `https://www.artic.edu/iiif/2/${artwork.image_id}/full/80,/0/default.jpg`
-                      : 'https://via.placeholder.com/80x80?text=No+Image'
-                  }
-                  alt={artwork.title || 'Unknown Title'}
-                  className="w-20 h-20 max-w-none group-hover:hidden"
-                />
-                <div className="w-20 h-20 hidden group-hover:flex transition duration-300 justify-center items-center border border-[#E0A449]">
-                  <img src={logoHoverIcon} alt="logo icon" />
+              <Link
+                to={`art/${artwork.id}`}
+                className="p-4 flex justify-between gap-4"
+              >
+                <div className="flex items-center justify-center">
+                  <img
+                    src={
+                      artwork.image_id
+                        ? `https://www.artic.edu/iiif/2/${artwork.image_id}/full/80,/0/default.jpg`
+                        : 'https://via.placeholder.com/80x80?text=No+Image'
+                    }
+                    alt={artwork.title || 'Unknown Title'}
+                    className="w-20 h-20 max-w-none group-hover:hidden"
+                  />
+                  <div className="w-20 h-20 hidden group-hover:flex transition duration-300 justify-center items-center border border-[#E0A449]">
+                    <img src={logoHoverIcon} alt="logo icon" />
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col gap-2 justify-between w-[219px] h-[98px]">
-                <div className="py-1">
-                  <h2
-                    className="text-lg font-medium truncate"
-                    title={artwork.title}
-                  >
-                    {artwork.title || 'Unknown Title'}
-                  </h2>
-                  <p className="text-sm text-[#E0A449]">
-                    {artwork.artist_title || 'Unknown Artist'}
+
+                <div className="flex flex-col gap-2 justify-between w-[150px] md:w-[170px] lg:w-[219px] h-[98px]">
+                  <div className="py-1">
+                    <h2
+                      className="text-lg font-medium truncate"
+                      title={artwork.title}
+                    >
+                      {artwork.title || 'Unknown Title'}
+                    </h2>
+                    <p className="text-sm text-[#E0A449]">
+                      {artwork.artist_title || 'Unknown Artist'}
+                    </p>
+                  </div>
+                  <p className="py-1 text-sm leading-[26.3px] font-extrabold text-[#393939]">
+                    {artwork.is_public_domain ? 'Public' : 'Private'}
                   </p>
                 </div>
-                <p className="py-1 text-sm leading-[26.3px] font-extrabold text-[#393939]">
-                  {artwork.is_public_domain ? 'Public' : 'Private'}
-                </p>
-              </div>
-              <div className="flex items-center justify-center">
-                <button
-                  className="flex justify-center items-center bg-[#F9F9F9] hover:bg-[#FBD7B2]/30 hover:scale-105 transition rounded-full w-[59px] h-[59px]"
-                  onClick={() =>
-                    alert(`Added "${artwork.title || 'Unknown'}" to favorites!`)
-                  }
-                >
-                  <img src={bookMarkIcon} alt="book mark icon" />
-                </button>
-              </div>
+
+                <div className="flex items-center justify-center">
+                  <button
+                    className="flex justify-center items-center bg-[#F9F9F9] hover:bg-[#FBD7B2]/30 hover:scale-105 transition rounded-full w-[59px] h-[59px]"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      toggleFavorite(artwork.id);
+                    }}
+                  >
+                    <img
+                      src={
+                        favorites.includes(artwork.id)
+                          ? bookMarkFilledIcon
+                          : bookMarkIcon
+                      }
+                      alt="book mark icon"
+                    />
+                  </button>
+                </div>
+              </Link>
             </div>
           ))}
         </div>

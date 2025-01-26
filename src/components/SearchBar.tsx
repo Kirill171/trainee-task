@@ -37,7 +37,7 @@ export default function SearchBar() {
     setError(null);
 
     try {
-      const response = await fetchArtworks(query, true, 12, page);
+      const response = await fetchArtworks(query, 12, page);
       setArtworks(response);
     } catch (err) {
       setError('Failed to fetch data. Please try again later.');
@@ -64,7 +64,7 @@ export default function SearchBar() {
       <div className="flex flex-col items-center">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="relative mb-8 w-[762px]"
+          className="relative mb-8 w-[305px] md:w-[562px] lg:w-[762px]"
         >
           <div>
             <input

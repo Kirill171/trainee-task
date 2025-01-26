@@ -1,9 +1,12 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useSearchContext } from '@/contexts/SearchContext';
 import { Artwork } from '@/types';
-import bookMarkIcon from '@/assets/bookmark.png';
+import bookMarkIcon from '@/assets/bookmark-2.png';
+import bookMarkFilledIcon from '@/assets/bookmark-3.png';
 import logoHoverIcon from '@/assets/logoHover2.svg';
 import fetchArtworks from '@/api/artworks';
+import { Link } from 'react-router-dom';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 export default function SearchResults() {
   const { setArtworks, artworks, loading, error, query } = useSearchContext();
@@ -11,10 +14,12 @@ export default function SearchResults() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
+  const { favorites, toggleFavorite } = useFavorites();
+
   const fetchPageData = useCallback(
     async (page: number) => {
       if (query) {
-        const response = await fetchArtworks(query, true, 12, page);
+        const response = await fetchArtworks(query, 12, page);
         setArtworks(response);
         setTotalPages(Math.ceil(response.pagination.total / 12));
       }
@@ -131,9 +136,9 @@ export default function SearchResults() {
   };
 
   return (
-    <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <section>
       {loading && (
-        <div className="flex justify-center items-center col-span-3">
+        <div className="flex justify-center items-center">
           <p className="ml-2 text-lg">Loading... </p>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -191,17 +196,18 @@ export default function SearchResults() {
         </div>
       )}
 
-      {error && <p className="col-start-2 mx-auto text-red-500">{error}</p>}
+      {error && <p className="mx-auto text-red-500">{error}</p>}
+
       {!loading && !error && (
         <>
-          <div className="mt-2 col-span-3 text-center">
+          <div className="mt-2 text-center">
             <p className="text-lg text-[#E0A449]">Search results</p>
             <p className="text-4xl text-[#393939]">
               Found {artworks.pagination.total} artworks
             </p>
           </div>
 
-          <div className="my-4 mx-auto col-span-3">
+          <div className="flex justify-center my-4">
             <label htmlFor="sort" className="mr-2">
               Sort by:
             </label>
@@ -218,56 +224,73 @@ export default function SearchResults() {
             </select>
           </div>
 
-          {artworks.data.map((artwork: Artwork) => (
-            <div
-              key={artwork.id}
-              className="flex group gap-4 p-4 bg-white border border-[#F0F1F1] w-[416px] h-[130px] overflow-hidden font-inter"
-            >
-              <div className="flex items-center justify-center">
-                <img
-                  src={
-                    artwork.image_id
-                      ? `https://www.artic.edu/iiif/2/${artwork.image_id}/full/80,/0/default.jpg`
-                      : 'https://via.placeholder.com/80x80?text=No+Image'
-                  }
-                  alt={artwork.title || 'Unknown Title'}
-                  className="w-20 h-20 max-w-none group-hover:hidden"
-                />
-                <div className="w-20 h-20 hidden group-hover:flex transition duration-300 justify-center items-center border border-[#E0A449]">
-                  <img src={logoHoverIcon} alt="logo icon" />
-                </div>
-              </div>
-              <div className="flex flex-col gap-2 justify-between w-[219px] h-[98px]">
-                <div className="py-1">
-                  <h2
-                    className="text-lg font-medium truncate"
-                    title={artwork.title}
-                  >
-                    {artwork.title || 'Unknown Title'}
-                  </h2>
-                  <p className="text-sm text-[#E0A449]">
-                    {artwork.artist_title || 'Unknown Artist'}
-                  </p>
-                </div>
-                <p className="py-1 text-sm leading-[26.3px] font-extrabold text-[#393939]">
-                  {artwork.is_public_domain ? 'Public' : 'Private'}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center">
-                <button
-                  className="flex justify-center items-center bg-[#F9F9F9] hover:bg-[#FBD7B2]/30 hover:scale-105 transition rounded-full w-[59px] h-[59px]"
-                  onClick={() =>
-                    alert(`Added "${artwork.title || 'Unknown'}" to favorites!`)
-                  }
+          <div className="pb-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {artworks.data.map((artwork: Artwork) => (
+              <div
+                key={artwork.id}
+                className="mx-auto group bg-white border border-[#F0F1F1] w-[360px] md:w-[370px] lg:w-[416px] h-[130px] overflow-hidden font-inter"
+              >
+                <Link
+                  to={`art/${artwork.id}`}
+                  className="p-4 flex justify-between gap-4"
                 >
-                  <img src={bookMarkIcon} alt="book mark icon" />
-                </button>
-              </div>
-            </div>
-          ))}
+                  <div className="flex items-center justify-center">
+                    <img
+                      src={
+                        artwork.image_id
+                          ? `https://www.artic.edu/iiif/2/${artwork.image_id}/full/80,/0/default.jpg`
+                          : 'https://via.placeholder.com/80x80?text=No+Image'
+                      }
+                      alt={artwork.title || 'Unknown Title'}
+                      className="w-20 h-20 max-w-none group-hover:hidden"
+                    />
+                    <div className="w-20 h-20 hidden group-hover:flex transition duration-300 justify-center items-center border border-[#E0A449]">
+                      <img src={logoHoverIcon} alt="logo icon" />
+                    </div>
+                  </div>
 
-          <div className="col-start-3 gap-2 flex justify-end items-center h-[30px] text-[18px]">
+                  <div className="flex flex-col gap-2 justify-between w-[150px] md:w-[170px] lg:w-[219px] h-[98px]">
+                    <div className="py-1">
+                      <h2
+                        className="text-lg font-medium truncate"
+                        title={artwork.title}
+                      >
+                        {artwork.title || 'Unknown Title'}
+                      </h2>
+                      <p className="text-sm text-[#E0A449]">
+                        {artwork.artist_title || 'Unknown Artist'}
+                      </p>
+                    </div>
+                    <p className="py-1 text-sm leading-[26.3px] font-extrabold text-[#393939]">
+                      {artwork.is_public_domain ? 'Public' : 'Private'}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-center">
+                    <button
+                      className="flex justify-center items-center bg-[#F9F9F9] hover:bg-[#FBD7B2]/30 hover:scale-105 transition rounded-full w-[59px] h-[59px]"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        toggleFavorite(artwork.id);
+                      }}
+                    >
+                      <img
+                        src={
+                          favorites.includes(artwork.id)
+                            ? bookMarkFilledIcon
+                            : bookMarkIcon
+                        }
+                        alt="book mark icon"
+                      />
+                    </button>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <div className="gap-2 flex justify-end items-center h-[30px] text-[18px]">
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
@@ -297,6 +320,6 @@ export default function SearchResults() {
           </div>
         </>
       )}
-    </div>
+    </section>
   );
 }
