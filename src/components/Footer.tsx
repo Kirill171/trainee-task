@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 export default function Footer() {
   return (
     <footer className="flex justify-center py-8 w-full h-[127px]">
-      <nav className="flex justify-between items-center px-4 md:px-0 w-[375px] md:w-[768px] lg:w-[80rem]">
+      <nav className="flex justify-between items-center px-4 lg:px-0 w-[375px] md:w-[768px] lg:w-[80rem]">
         <div className="flex items-end font-inter">
           <Link to="/">
             <img

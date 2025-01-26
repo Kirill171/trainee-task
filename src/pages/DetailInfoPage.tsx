@@ -37,8 +37,8 @@ export default function DetailInfoPage() {
 
   return (
     <section className="py-[120px]">
-      <div className="container flex gap-20 flex-col md:flex-row">
-        <div className="mx-auto relative">
+      <div className="container flex gap-20 md:p-4 lg:p-0 flex-col md:flex-row">
+        <div className="mx-auto lg:mx-0 relative">
           {artwork.id ? (
             <>
               <img
@@ -65,7 +65,7 @@ export default function DetailInfoPage() {
           )}
         </div>
 
-        <div className="flex flex-col justify-between px-4 md:px-0 md:pr-4 lg:pr-0 h-[500px] lg:h-[570px]">
+        <div className="flex flex-col justify-between px-4 md:px-0 lg:pr-0 h-[500px] lg:h-[570px]">
           <div>
             <h1 className="text-3xl text-[#393939] lg:mb-9">{artwork.title}</h1>
             <p className="text-2xl text-[#E0A449] lg:mb-3">
