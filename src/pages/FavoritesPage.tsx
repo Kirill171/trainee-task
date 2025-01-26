@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useFavorites } from '@/contexts/FavoritesContext';
 import { fetchArtworkById } from '@/api/artworks';
 import { Artwork } from '@/types';
-import bookMarkIcon from '@/assets/bookmark-big.png';
+import bookMarkBigIcon from '@/assets/bookmark-big.png';
+import bookMarkIcon from '@/assets/bookmark-2.png';
 import bookMarkFilledIcon from '@/assets/bookmark-3.png';
 import { Link } from 'react-router-dom';
 
@@ -48,7 +49,7 @@ export default function FavoritesPage() {
             Here Are Your
           </p>
           <p className="flex justify-center text-6xl font-bold leading-[1.3] text-[#F17900]">
-            Favorites
+            <img src={bookMarkBigIcon} alt="big book mark icon" /> Favorites
           </p>
         </div>
 
