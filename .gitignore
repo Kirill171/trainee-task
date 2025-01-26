@@ -68,7 +68,6 @@ coverage/
 
 # TypeScript Coverage
 *.js.map
-*.d.ts
 
 # Testing artifacts
 jest/
