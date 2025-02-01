@@ -30,7 +30,7 @@ export interface Artwork {
 }
 
 export interface SearchResponse {
-  preference: any;
+  preference: object | null;
   pagination: Pagination;
   data: Artwork[];
   info: Info;

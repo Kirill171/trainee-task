@@ -1,8 +1,9 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { BrowserRouter as Router } from 'react-router-dom';
+
+import fetchArtworks from '@/api/artworks';
 import TopicsForYou from '@/components/TopicsForYou';
 import { useFavorites } from '@/contexts/FavoritesContext';
-import fetchArtworks from '@/api/artworks';
-import { BrowserRouter as Router } from 'react-router-dom';
 
 jest.mock('@/contexts/FavoritesContext', () => ({
   useFavorites: jest.fn()

@@ -1,238 +1,292 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Artwork } from '@/types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { generatePath, Link } from 'react-router-dom';
+import styled from 'styled-components';
+
 import bookMarkIcon from '@/assets/bookmark-2.png';
 import bookMarkFilledIcon from '@/assets/bookmark-3.png';
-import fetchArtworks from '@/api/artworks';
-import { Link } from 'react-router-dom';
+import Pagination from '@/components/Pagination';
+import { ROUTES } from '@/constants/routes';
 import { useFavorites } from '@/contexts/FavoritesContext';
+import useFetchArtworks from '@/hooks/useFetchArtworks';
+import { Artwork } from '@/types';
 
 export default function TopicsForYou() {
-  const [artworks, setArtworks] = useState<Artwork[] | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-
   const { favorites, toggleFavorite } = useFavorites();
 
-  const fetchPageData = useCallback(async (page: number) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetchArtworks('special gallery', 3, page);
-      setArtworks(response.data);
-      setTotalPages(Math.ceil(response.pagination.total / 12));
-    } catch (err) {
-      setError('Failed to fetch data. Please try again later.');
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { response, loading, error, fetchData } = useFetchArtworks();
 
   useEffect(() => {
-    fetchPageData(currentPage);
-  }, [currentPage, fetchPageData]);
+    fetchData('special gallery', 3, currentPage);
+  }, [currentPage, fetchData]);
 
-  const calculateVisiblePages = () => {
-    const visiblePages = [];
+  const artworks: Artwork[] | null = response?.data ?? null;
+
+  const totalPages = response?.pagination?.total
+    ? Math.ceil(response.pagination.total / 12)
+    : 1;
+
+  const visiblePages = useMemo(() => {
+    if (!totalPages) return [];
     const startPage = Math.max(1, currentPage - 2);
     const endPage = Math.min(totalPages, currentPage + 2);
-
+    const pages = [];
     for (let i = startPage; i <= endPage; i++) {
-      visiblePages.push(i);
+      pages.push(i);
     }
+    return pages;
+  }, [currentPage, totalPages]);
 
-    return visiblePages;
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePageChange = (page: number) => {
-    if (page !== currentPage) {
-      setCurrentPage(page);
-    }
-  };
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (page !== currentPage) {
+        setCurrentPage(page);
+      }
+    },
+    [currentPage]
+  );
 
   return (
-    <section className="py-20">
-      <div className="text-center mb-[50px]">
-        <p className="text-lg text-[#E0A449]">Topics for you</p>
-        <p className="text-4xl text-[#393939]">Our special gallery</p>
-      </div>
+    <Section>
+      <Header>
+        <Subtitle>Topics for you</Subtitle>
+        <Title>Our special gallery</Title>
+      </Header>
 
       {loading && (
-        <div className="py-24 flex justify-center items-center">
-          <p className="ml-2 text-lg">Loading... </p>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 200 200"
-            className="w-7 h-7"
-          >
-            <radialGradient
-              id="a9"
-              cx="0.66"
-              fx="0.66"
-              cy="0.3125"
-              fy="0.3125"
-              gradientTransform="scale(1.5)"
-            >
-              <stop offset="0" stopColor="#000000"></stop>
-              <stop offset="0.3" stopColor="#000000" stopOpacity="0.9"></stop>
-              <stop offset="0.6" stopColor="#000000" stopOpacity="0.6"></stop>
-              <stop offset="0.8" stopColor="#000000" stopOpacity="0.3"></stop>
-              <stop offset="1" stopColor="#000000" stopOpacity="0"></stop>
-            </radialGradient>
-            <circle
-              style={{ transformOrigin: 'center' }}
-              fill="none"
-              stroke="url(#a9)"
-              strokeWidth="15"
-              strokeLinecap="round"
-              strokeDasharray="200 1000"
-              strokeDashoffset="0"
-              cx="100"
-              cy="100"
-              r="70"
-            >
-              <animateTransform
-                type="rotate"
-                attributeName="transform"
-                calcMode="spline"
-                dur="2s"
-                values="360;0"
-                keyTimes="0;1"
-                keySplines="0 0 1 1"
-                repeatCount="indefinite"
-              ></animateTransform>
-            </circle>
-            <circle
-              fill="none"
-              opacity="0.2"
-              stroke="#000000"
-              strokeWidth="15"
-              strokeLinecap="round"
-              cx="100"
-              cy="100"
-              r="70"
-            ></circle>
-          </svg>
-        </div>
+        <LoadingContainer>
+          <LoadingText>Loading...</LoadingText>
+        </LoadingContainer>
       )}
 
-      {error && !loading && <p className="text-red-500">{error}</p>}
+      {error && !loading && <ErrorText>{error}</ErrorText>}
 
       {!loading && artworks && (
         <>
-          <div className="flex flex-col lg:flex-row gap-[60px] pb-6">
+          <ArtworkContainer>
             {artworks.map((artwork) => (
-              <div
-                key={artwork.id}
-                className="mx-auto relative w-[350px] lg:w-[387px] h-[504px] lg:h-[514px] overflow-hidden font-inter"
-              >
-                <Link to={`art/${artwork.id}`}>
-                  <div className="flex justify-center">
-                    <img
+              <ArtworkCard key={artwork.id}>
+                <ArtworkLink
+                  to={generatePath(ROUTES.ART_DETAIL, { id: artwork.id })}
+                >
+                  <ArtworkImageContainer>
+                    <ArtworkImage
                       src={
                         artwork.image_id
                           ? `https://www.artic.edu/iiif/2/${artwork.image_id}/full/387,/0/default.jpg`
                           : 'https://via.placeholder.com/387x444?text=No+Image'
                       }
                       alt={artwork.title || 'Unknown Title'}
-                      className="w-[350px] lg:w-[387px] h-[444px] max-w-none"
                     />
-                  </div>
+                  </ArtworkImageContainer>
 
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex justify-between bg-white border border-[#F0F1F1] w-[300px] lg:w-[334px] h-[132px] py-4 px-6">
-                    <div className="flex flex-col gap-2 justify-between w-[180px] lg:w-[219px] h-[98px]">
-                      <div className="py-1">
-                        <h2
-                          className="text-lg font-semibold truncate"
-                          title={artwork.title}
-                        >
+                  <ArtworkDetailsContainer>
+                    <ArtworkDetails>
+                      <ArtworkInfo>
+                        <ArtworkTitle title={artwork.title}>
                           {artwork.title || 'Unknown Title'}
-                        </h2>
-                        <p className="text-sm text-[#E0A449]">
+                        </ArtworkTitle>
+                        <ArtworkArtist>
                           {artwork.artist_title || 'Unknown Artist'}
-                        </p>
-                      </div>
-                      <p className="py-1 text-sm leading-[26.3px] font-extrabold text-[#393939]">
+                        </ArtworkArtist>
+                      </ArtworkInfo>
+                      <ArtworkStatus>
                         {artwork.is_public_domain ? 'Public' : 'Private'}
-                      </p>
-                    </div>
+                      </ArtworkStatus>
+                    </ArtworkDetails>
 
-                    <div className="flex items-center justify-center">
-                      <button
-                        className={`flex justify-center items-center bg-[#F9F9F9] hover:scale-105 transition rounded-full w-[59px] h-[59px]`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          toggleFavorite(artwork.id);
-                        }}
-                      >
-                        <img
-                          src={
-                            favorites.includes(artwork.id)
-                              ? bookMarkFilledIcon
-                              : bookMarkIcon
-                          }
-                          alt="bookmark icon"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </Link>
-              </div>
+                    <BookmarkButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        toggleFavorite(artwork.id);
+                      }}
+                    >
+                      <img
+                        src={
+                          favorites.includes(artwork.id)
+                            ? bookMarkFilledIcon
+                            : bookMarkIcon
+                        }
+                        alt="bookmark icon"
+                      />
+                    </BookmarkButton>
+                  </ArtworkDetailsContainer>
+                </ArtworkLink>
+              </ArtworkCard>
             ))}
-          </div>
+          </ArtworkContainer>
 
-          <div className="block md:flex lg:block justify-center">
-            <div className="gap-2 flex justify-end items-center w-[350px] lg:w-auto h-[30px] text-[18px]">
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-                hidden={currentPage === 1}
-                className="p-2 text-lg"
-              >
-                ←
-              </button>
-
-              {calculateVisiblePages().map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`mx-1 ${
-                    currentPage === page
-                      ? 'p-0 font-semibold w-[30px] h-[30px] bg-[#F17900] rounded-[4px] text-white'
-                      : 'p-2 font-light'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                className="p-2 text-lg"
-              >
-                →
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            visiblePages={visiblePages}
+            onPageChange={handlePageChange}
+          />
         </>
       )}
-    </section>
+    </Section>
   );
 }
+
+const Section = styled.section`
+  padding: 80px 0;
+`;
+
+const Header = styled.div`
+  text-align: center;
+  margin-bottom: 50px;
+`;
+
+const Subtitle = styled.p`
+  font-size: ${(props) => props.theme.fontSizes.medium};
+  color: ${(props) => props.theme.colors.secondary};
+`;
+
+const Title = styled.p`
+  font-size: ${(props) => props.theme.fontSizes.xlarge};
+  color: ${(props) => props.theme.colors.text};
+`;
+
+const LoadingContainer = styled.div`
+  padding: 96px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LoadingText = styled.p`
+  font-size: ${(props) => props.theme.fontSizes.medium};
+`;
+
+const ErrorText = styled.p`
+  color: ${(props) => props.theme.colors.error};
+  text-align: center;
+`;
+
+const ArtworkContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  padding-bottom: ${(props) => props.theme.spacing.large};
+
+  @media (min-width: 1280px) {
+    flex-direction: row;
+  }
+`;
+
+const ArtworkCard = styled.div`
+  position: relative;
+  width: 350px;
+  height: 504px;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  margin: 0 auto;
+
+  @media (min-width: 1280px) {
+    width: 387px;
+    height: 514px;
+  }
+`;
+
+const ArtworkLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+`;
+
+const ArtworkImageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const ArtworkImage = styled.img`
+  width: 350px;
+  height: 444px;
+  max-width: none;
+
+  @media (min-width: 1280px) {
+    width: 387px;
+  }
+`;
+
+const ArtworkDetailsContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: ${(props) => props.theme.colors.background};
+  border: 1px solid #f0f1f1;
+  width: 300px;
+  height: 132px;
+  padding: ${(props) =>
+    `${props.theme.spacing.medium} ${props.theme.spacing.large}`};
+
+  @media (min-width: 1280px) {
+    width: 334px;
+  }
+`;
+
+const ArtworkDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${(props) => props.theme.spacing.small};
+  justify-content: space-between;
+  width: 180px;
+  height: 98px;
+
+  @media (min-width: 1280px) {
+    width: 219px;
+  }
+`;
+
+const ArtworkInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${(props) => props.theme.spacing.small};
+  width: 180px;
+  height: 98px;
+
+  @media (min-width: 1280px) {
+    width: 219px;
+  }
+`;
+
+const ArtworkTitle = styled.h2`
+  font-size: ${(props) => props.theme.fontSizes.medium};
+  font-weight: ${(props) => props.theme.fontWeight.semiBold};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const ArtworkArtist = styled.p`
+  font-size: ${(props) => props.theme.fontSizes.small};
+  color: ${(props) => props.theme.colors.secondary};
+`;
+
+const ArtworkStatus = styled.p`
+  font-size: ${(props) => props.theme.fontSizes.small};
+  font-weight: ${(props) => props.theme.fontWeight.extraBold};
+  color: ${(props) => props.theme.colors.text};
+`;
+
+const BookmarkButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: ${(props) => props.theme.colors.buttonBackground};
+  border: none;
+  border-radius: 50%;
+  width: 59px;
+  height: 59px;
+  cursor: pointer;
+  transition: transform 0.3s;
+
+  &:hover {
+    transform: scale(1.05);
+    background: ${(props) => props.theme.colors.buttonBackgroundHover};
+  }
+`;
