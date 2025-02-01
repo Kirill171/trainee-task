@@ -1,7 +1,8 @@
+import '@testing-library/jest-dom';
+
+import Layout from '@components/Layout';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Layout from '@components/Layout';
-import '@testing-library/jest-dom';
 
 describe('Layout', () => {
   it('renders Header and Footer correctly', () => {

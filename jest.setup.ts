@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
-import { TextEncoder, TextDecoder } from 'text-encoding';
+
+import { TextDecoder,TextEncoder } from 'text-encoding';
 
 global.TextEncoder = TextEncoder as any;
 global.TextDecoder = TextDecoder as any;

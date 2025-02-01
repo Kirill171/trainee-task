@@ -1,12 +1,43 @@
+import styled from 'styled-components';
+
 export default function Hero() {
   return (
-    <section className="pt-32">
-      <div className="flex justify-center text-center">
-        <h1 className="font-bold text-[#393939] text-3xl md:text-[64px] leading-[1.3]">
-          Let&apos;s Find Some <span className="text-[#F17900]">Art</span>{' '}
-          <p>Here!</p>
-        </h1>
-      </div>
-    </section>
+    <HeroSection>
+      <HeroContainer>
+        <HeroTitle>
+          Let&apos;s Find Some <HeroHighlight>Art</HeroHighlight>{' '}
+          <HeroSubtitle>Here!</HeroSubtitle>
+        </HeroTitle>
+      </HeroContainer>
+    </HeroSection>
   );
 }
+
+const HeroSection = styled.section`
+  padding-top: 128px;
+`;
+
+const HeroContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  text-align: center;
+`;
+
+const HeroTitle = styled.h1`
+  font-weight: ${(props) => props.theme.fontWeight.bold};
+  color: ${(props) => props.theme.colors.text};
+  font-size: ${(props) => props.theme.fontSizes.large};
+
+  @media (min-width: 768px) {
+    font-size: ${(props) => props.theme.fontSizes.twoXlarge};
+  }
+`;
+
+const HeroHighlight = styled.span`
+  color: ${(props) => props.theme.colors.primary};
+`;
+
+const HeroSubtitle = styled.p`
+  margin: 0;
+  display: block;
+`;

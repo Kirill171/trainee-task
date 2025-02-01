@@ -1,9 +1,11 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import DetailInfoPage from '@/pages/DetailInfoPage';
-import { FavoritesProvider } from '@/contexts/FavoritesContext';
-import { fetchArtworkById } from '@/api/artworks';
 import '@testing-library/jest-dom';
+
+import { fireEvent,render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+
+import { fetchArtworkById } from '@/api/artworks';
+import { FavoritesProvider } from '@/contexts/FavoritesContext';
+import DetailInfoPage from '@/pages/DetailInfoPage';
 
 jest.mock('@/api/artworks', () => ({
   fetchArtworkById: jest.fn()

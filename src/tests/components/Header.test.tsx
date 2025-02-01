@@ -1,13 +1,14 @@
+import '@testing-library/jest-dom';
+
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   BrowserRouter,
   MemoryRouter,
-  useLocation,
   Route,
-  Routes
-} from 'react-router-dom';
-import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
+  Routes,
+  useLocation} from 'react-router-dom';
+
 import Header from '@/components/Header';
 
 jest.mock('react-router-dom', () => ({

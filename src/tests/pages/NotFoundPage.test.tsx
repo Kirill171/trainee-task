@@ -1,7 +1,9 @@
+import '@testing-library/jest-dom';
+
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+
 import NotFoundPage from '@/pages/NotFoundPage';
-import '@testing-library/jest-dom';
 
 describe('NotFoundPage', () => {
   it('renders the "Page Not Found" message', () => {

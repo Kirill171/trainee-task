@@ -1,6 +1,7 @@
 import axios from 'axios';
+
 import fetchArtworks, { fetchArtworkById } from '@/api/artworks';
-import { mockSearchResponse, mockArtworkDetail } from '@/utils/mockData';
+import { mockArtworkDetail,mockSearchResponse } from '@/utils/mockData';
 
 jest.mock('axios');
 

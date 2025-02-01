@@ -1,7 +1,8 @@
+import Footer from '@components/Footer';
+import Header from '@components/Header';
 import { ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
-import Header from '@components/Header';
-import Footer from '@components/Footer';
+import styled from 'styled-components';
 
 type LayoutProps = {
   children?: ReactNode;
@@ -9,12 +10,22 @@ type LayoutProps = {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
+    <Container>
       <Header />
-      <main className="bg-[#F5F5F5]">{children || <Outlet />}</main>
+      <Main>{children || <Outlet />}</Main>
       <Footer />
-    </div>
+    </Container>
   );
 };
 
 export default Layout;
+
+const Container = styled.div`
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+`;
+
+const Main = styled.main`
+  background-color: ${(props) => props.theme.colors.mainBackground};
+`;

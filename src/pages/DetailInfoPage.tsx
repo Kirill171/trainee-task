@@ -1,45 +1,34 @@
-import { useEffect, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchArtworkById } from '@/api/artworks';
-import type { ArtworkData } from '@/types/ArtworkDetail';
+import styled, { keyframes } from 'styled-components';
+
 import bookMarkIcon from '@/assets/bookmark-2.png';
 import bookMarkFilledIcon from '@/assets/bookmark-3.png';
 import { useFavorites } from '@/contexts/FavoritesContext';
+import { useArtworkDetail } from '@/hooks/useArtworkDetail';
 
-export default function DetailInfoPage() {
+function DetailInfoPage() {
   const { id } = useParams<{ id: string }>();
-  const [artwork, setArtwork] = useState<ArtworkData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  const { artwork, loading, error } = useArtworkDetail(id);
   const { favorites, toggleFavorite } = useFavorites();
 
-  useEffect(() => {
-    const loadArtwork = async () => {
-      try {
-        if (!id) return;
-        const response = await fetchArtworkById(id);
-        setArtwork(response.data);
-      } catch (err) {
-        setError('Failed to load artwork details.');
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleToggleFavorite = useCallback(() => {
+    if (artwork) {
+      toggleFavorite(artwork.id);
+    }
+  }, [artwork, toggleFavorite]);
 
-    loadArtwork();
-  }, [id]);
+  const artworkImageSrc = useMemo(() => {
+    return artwork && artwork.image_id
+      ? `https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`
+      : '';
+  }, [artwork]);
 
   if (loading)
     return (
-      <div className="flex justify-center items-center">
-        <p className="ml-2 text-lg">Loading... </p>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 200 200"
-          className="w-7 h-7"
-        >
+      <LoadingContainer>
+        <LoadingText>Loading...</LoadingText>
+        <Spinner viewBox="0 0 200 200">
           <radialGradient
             id="a9"
             cx="0.66"
@@ -48,14 +37,13 @@ export default function DetailInfoPage() {
             fy="0.3125"
             gradientTransform="scale(1.5)"
           >
-            <stop offset="0" stopColor="#000000"></stop>
-            <stop offset="0.3" stopColor="#000000" stopOpacity="0.9"></stop>
-            <stop offset="0.6" stopColor="#000000" stopOpacity="0.6"></stop>
-            <stop offset="0.8" stopColor="#000000" stopOpacity="0.3"></stop>
-            <stop offset="1" stopColor="#000000" stopOpacity="0"></stop>
+            <stop offset="0" stopColor="#000000" />
+            <stop offset="0.3" stopColor="#000000" stopOpacity="0.9" />
+            <stop offset="0.6" stopColor="#000000" stopOpacity="0.6" />
+            <stop offset="0.8" stopColor="#000000" stopOpacity="0.3" />
+            <stop offset="1" stopColor="#000000" stopOpacity="0" />
           </radialGradient>
-          <circle
-            style={{ transformOrigin: 'center' }}
+          <SpinnerCircle
             fill="none"
             stroke="url(#a9)"
             strokeWidth="15"
@@ -75,9 +63,9 @@ export default function DetailInfoPage() {
               keyTimes="0;1"
               keySplines="0 0 1 1"
               repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-          <circle
+            />
+          </SpinnerCircle>
+          <SpinnerCircle
             fill="none"
             opacity="0.2"
             stroke="#000000"
@@ -86,28 +74,21 @@ export default function DetailInfoPage() {
             cx="100"
             cy="100"
             r="70"
-          ></circle>
-        </svg>
-      </div>
+          />
+        </Spinner>
+      </LoadingContainer>
     );
-  if (error) return <p className="mx-auto text-3xl text-red-500">{error}</p>;
-  if (!artwork) return <p className="mx-auto text-3xl">{error}</p>;
+  if (error) return <ErrorMessage>{error}</ErrorMessage>;
+  if (!artwork) return <ErrorMessage>{error}</ErrorMessage>;
 
   return (
-    <section className="py-[120px]">
-      <div className="container flex gap-20 md:p-4 lg:p-0 flex-col md:flex-row">
-        <div className="mx-auto lg:mx-0 relative">
+    <Section>
+      <ContentContainer>
+        <ImageWrapper>
           {artwork.id ? (
             <>
-              <img
-                src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
-                alt={artwork.title}
-                className="w-[350px] lg:w-[497px] h-[444px] lg:h-[570px] max-w-none"
-              />
-              <button
-                className={`absolute right-4 top-4 flex justify-center items-center bg-[#F9F9F9] hover:scale-105 focus:border-none transition rounded-full w-[59px] h-[59px]`}
-                onClick={() => toggleFavorite(artwork.id)}
-              >
+              <ArtworkImage src={artworkImageSrc} alt={artwork.title} />
+              <FavoriteButton onClick={handleToggleFavorite}>
                 <img
                   src={
                     favorites.includes(artwork.id)
@@ -116,48 +97,211 @@ export default function DetailInfoPage() {
                   }
                   alt="bookmark icon"
                 />
-              </button>
+              </FavoriteButton>
             </>
           ) : (
-            <div className="text-gray-500">Image not available</div>
+            <NoImageMessage>Image not available</NoImageMessage>
           )}
-        </div>
+        </ImageWrapper>
 
-        <div className="flex flex-col justify-between px-4 md:px-0 lg:pr-0 h-[500px] lg:h-[570px]">
+        <InfoWrapper>
           <div>
-            <h1 className="text-3xl text-[#393939] lg:mb-9">{artwork.title}</h1>
-            <p className="text-2xl text-[#E0A449] lg:mb-3">
-              {artwork.artist_title || 'Unknown artist'}
-            </p>
-            <p className="text-[#393939] font-bold">
-              {artwork.date_start || 'Unknown date'}-{artwork.date_end}
-            </p>
+            <ArtworkTitle>{artwork.title}</ArtworkTitle>
+            <ArtistName>{artwork.artist_title || 'Unknown artist'}</ArtistName>
+            <ArtworkDates>
+              {artwork.date_start || 'Unknown date'} - {artwork.date_end}
+            </ArtworkDates>
           </div>
 
-          <div className="flex flex-col gap-8">
-            <h2 className="text-3xl text-[#393939]">Overview</h2>
-            <ul className="list-none text-[#393939] space-y-2">
-              <li>
-                <span className="text-[#E0A449]">Artist nationality:</span>{' '}
+          <OverviewSection>
+            <OverviewTitle>Overview</OverviewTitle>
+            <OverviewList>
+              <OverviewItem>
+                <OverviewLabel>Artist nationality:</OverviewLabel>{' '}
                 {artwork.place_of_origin || 'Unknown'}
-              </li>
-              <li>
-                <span className="text-[#E0A449]">Dimensions:</span>{' '}
+              </OverviewItem>
+              <OverviewItem>
+                <OverviewLabel>Dimensions:</OverviewLabel>{' '}
                 {artwork.dimensions || 'Unknown'}
-              </li>
-              <li>
-                <span className="text-[#E0A449]">Credit Line:</span>{' '}
+              </OverviewItem>
+              <OverviewItem>
+                <OverviewLabel>Credit Line:</OverviewLabel>{' '}
                 {artwork.credit_line || 'Unknown'}
-              </li>
-              <li>
-                <span className="text-[#E0A449]">Medium:</span>{' '}
+              </OverviewItem>
+              <OverviewItem>
+                <OverviewLabel>Medium:</OverviewLabel>{' '}
                 {artwork.medium_display || 'Unknown'}
-              </li>
-              <li>{artwork.is_public_domain ? 'Public' : 'Private'}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
+              </OverviewItem>
+              <OverviewItem>
+                {artwork.is_public_domain ? 'Public' : 'Private'}
+              </OverviewItem>
+            </OverviewList>
+          </OverviewSection>
+        </InfoWrapper>
+      </ContentContainer>
+    </Section>
   );
 }
+
+export default React.memo(DetailInfoPage);
+
+const Section = styled.section`
+  padding: 120px 0;
+`;
+
+const ContentContainer = styled.div`
+  margin: 0 auto;
+  display: flex;
+  gap: ${(props) => props.theme.spacing.medium};
+  flex-direction: column;
+  padding: 0 ${(props) => props.theme.spacing.small};
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    max-width: 768px;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0;
+    max-width: 1280px;
+    width: 1280px;
+    gap: ${(props) => props.theme.spacing.xlarge};
+  }
+`;
+
+const ImageWrapper = styled.div`
+  position: relative;
+  margin: 0 auto;
+
+  @media (min-width: 1280px) {
+    margin: 0;
+  }
+`;
+
+const ArtworkImage = styled.img`
+  width: 350px;
+  height: 444px;
+  max-width: none;
+
+  @media (min-width: 1280px) {
+    width: 497px;
+    height: 570px;
+  }
+`;
+
+const FavoriteButton = styled.button`
+  position: absolute;
+  top: ${(props) => props.theme.spacing.medium};
+  right: ${(props) => props.theme.spacing.medium};
+  background: ${(props) => props.theme.colors.buttonBackground};
+  border: none;
+  border-radius: 50%;
+  width: 59px;
+  height: 59px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const NoImageMessage = styled.div`
+  color: ${(props) => props.theme.colors.text};
+`;
+
+const InfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 500px;
+
+  @media (min-width: 1280px) {
+    height: 570px;
+  }
+`;
+
+const ArtworkTitle = styled.h1`
+  line-height: ${(props) => props.theme.fontSizes.xlarge};
+  font-size: ${(props) => props.theme.fontSizes.xlarge};
+  color: ${(props) => props.theme.colors.text};
+  margin-bottom: ${(props) => props.theme.spacing.medium};
+`;
+
+const ArtistName = styled.p`
+  font-size: ${(props) => props.theme.fontSizes.large};
+  color: ${(props) => props.theme.colors.secondary};
+  margin-bottom: ${(props) => props.theme.spacing.small};
+`;
+
+const ArtworkDates = styled.p`
+  color: ${(props) => props.theme.colors.text};
+  font-weight: ${(props) => props.theme.fontWeight.bold};
+`;
+
+const OverviewSection = styled.div`
+  margin-top: ${(props) => props.theme.spacing.xlarge};
+`;
+
+const OverviewTitle = styled.h2`
+  font-size: ${(props) => props.theme.fontSizes.large};
+  color: ${(props) => props.theme.colors.text};
+  margin-bottom: ${(props) => props.theme.spacing.medium};
+`;
+
+const OverviewList = styled.ul`
+  list-style: none;
+  padding: 0;
+  color: ${(props) => props.theme.colors.text};
+  line-height: 1.6;
+`;
+
+const OverviewItem = styled.li`
+  margin-bottom: ${(props) => props.theme.spacing.small};
+`;
+
+const OverviewLabel = styled.span`
+  color: ${(props) => props.theme.colors.secondary};
+  font-weight: ${(props) => props.theme.fontWeight.semiBold};
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+`;
+
+const LoadingText = styled.p`
+  margin-left: ${(props) => props.theme.spacing.small};
+  font-size: ${(props) => props.theme.fontSizes.medium};
+`;
+
+const rotate = keyframes`
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+`;
+
+const Spinner = styled.svg`
+  width: 28px;
+  height: 28px;
+`;
+
+const SpinnerCircle = styled.circle`
+  transform-origin: center;
+  animation: ${rotate} 2s linear infinite;
+`;
+
+const ErrorMessage = styled.p`
+  margin: 0 auto;
+  font-size: ${(props) => props.theme.fontSizes.xlarge};
+  color: ${(props) => props.theme.colors.error};
+  text-align: center;
+`;
