@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
-
 import React, { createContext, useContext, useState } from 'react';
+
+import LocalStorageService from '@/utils/localStorageService';
 
 type FavoritesContextType = {
   favorites: number[];
@@ -15,8 +15,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const [favorites, setFavorites] = useState<number[]>(() => {
-    const stored = localStorage.getItem('favorites');
-    return stored ? JSON.parse(stored) : [];
+    return LocalStorageService.getFavorites();
   });
 
   const toggleFavorite = (id: number) => {
@@ -24,7 +23,8 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
       const updatedFavorites = prevFavorites.includes(id)
         ? prevFavorites.filter((favId) => favId !== id)
         : [...prevFavorites, id];
-      localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+
+      LocalStorageService.setFavorites(updatedFavorites);
       return updatedFavorites;
     });
   };
@@ -43,5 +43,3 @@ export const useFavorites = () => {
   }
   return context;
 };
-
-/* eslint-enable no-unused-vars */

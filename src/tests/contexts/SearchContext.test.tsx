@@ -1,18 +1,12 @@
-import { render, screen, act } from '@testing-library/react';
-import { SearchProvider, useSearchContext } from '@/contexts/SearchContext';
 import '@testing-library/jest-dom';
 
+import { act, render, screen } from '@testing-library/react';
+
+import { SearchProvider, useSearchContext } from '@/contexts/SearchContext';
+
 const TestComponent = () => {
-  const {
-    artworks,
-    loading,
-    error,
-    query,
-    setArtworks,
-    setLoading,
-    setError,
-    setQuery
-  } = useSearchContext();
+  const { artworks, loading, error, query, setLoading, setError, setQuery } =
+    useSearchContext();
   return (
     <div>
       <input

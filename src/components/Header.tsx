@@ -1,83 +1,219 @@
-import { useState } from 'react';
-import logoIcon from '@/assets/logo.png';
+import { useEffect, useRef,useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+
+import barsIcon from '@/assets/bars.svg';
 import bookMarkIcon from '@/assets/bookmark.png';
 import homeIcon from '@/assets/home.png';
-import barsIcon from '@/assets/bars.svg';
-import { Link, useLocation } from 'react-router-dom';
+import logoIcon from '@/assets/logo.png';
+import { ROUTES } from '@/constants/routes';
 
 export default function Header() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
-    <header className="flex justify-center bg-custom-gradient py-8 w-full h-[127px]">
-      <nav className="flex justify-between items-center px-4 lg:px-0 w-[375px] md:w-[768px] lg:w-[80rem]">
-        <div className="flex items-end font-inter">
-          <Link to="/">
-            <img
-              src={logoIcon}
-              alt="logo"
-              className="m-2 w-auto h-[32px] md:h-[53px]"
-            />
+    <HeaderContainer>
+      <Nav>
+        <LogoContainer>
+          <Link to={ROUTES.HOME}>
+            <Logo src={logoIcon} alt="logo" />
           </Link>
-          <Link to="/">
-            <p className="m-0 font-[300] text-white text-xl leading-8">
-              Museum of <span className="font-medium text-[#E0A449]">Art</span>
-            </p>
+          <Link to={ROUTES.HOME}>
+            <Title>
+              Museum of <Highlight>Art</Highlight>
+            </Title>
           </Link>
-        </div>
+        </LogoContainer>
 
-        <div className="relative md:hidden">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="text-white focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            <img src={barsIcon} alt="burger menu icon" className="h-6" />
-          </button>
+        <BurgerMenu ref={menuRef}>
+          <BurgerButton onClick={() => setIsOpen(!isOpen)}>
+            <img src={barsIcon} alt="burger menu icon" />
+          </BurgerButton>
           {isOpen && (
-            <div className="absolute top-full right-0 bg-gray-800 text-white rounded-lg shadow-lg z-50 w-[200px]">
-              <div className="flex flex-col items-start p-4 space-y-4">
-                {location.pathname !== '/' && (
-                  <Link
-                    to="/"
+            <DropdownMenu>
+              <DropdownContent>
+                {location.pathname !== ROUTES.HOME && (
+                  <DropdownLink
+                    to={ROUTES.HOME}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded-md w-full"
                   >
-                    <img src={homeIcon} alt="home icon" className="w-5 h-5" />
+                    <img src={homeIcon} alt="home icon" />
                     <span>Home</span>
-                  </Link>
+                  </DropdownLink>
                 )}
-                <Link
-                  to="/favorites"
+                <DropdownLink
+                  to={ROUTES.FAVORITES}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded-md w-full"
                 >
-                  <img
-                    src={bookMarkIcon}
-                    alt="bookmark icon"
-                    className="w-5 h-5"
-                  />
+                  <img src={bookMarkIcon} alt="bookmark icon" />
                   <span>Your favorites</span>
-                </Link>
-              </div>
-            </div>
+                </DropdownLink>
+              </DropdownContent>
+            </DropdownMenu>
           )}
-        </div>
+        </BurgerMenu>
 
-        <div className="hidden md:flex gap-6 h-6 text-lg font-inter">
-          {location.pathname !== '/' && (
-            <Link to="/" className="flex items-center gap-1">
+        <NavLinks>
+          {location.pathname !== ROUTES.HOME && (
+            <StyledLink to={ROUTES.HOME}>
               <img src={homeIcon} alt="home icon" />
-              <div className="font-[300] text-white">Home</div>
-            </Link>
+              <span>Home</span>
+            </StyledLink>
           )}
-          <Link to="/favorites" className="flex items-center gap-1">
+          <StyledLink to={ROUTES.FAVORITES}>
             <img src={bookMarkIcon} alt="book mark icon" />
-            <div className="font-[300] text-white">Your favorites</div>
-          </Link>
-        </div>
-      </nav>
-    </header>
+            <span>Your favorites</span>
+          </StyledLink>
+        </NavLinks>
+      </Nav>
+    </HeaderContainer>
   );
 }
+
+const HeaderContainer = styled.header`
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(90deg, #343333 17%, #484848 69%, #282828 99%);
+  padding: ${(props) => props.theme.spacing.xlarge} 0;
+  width: 100%;
+  height: 127px;
+`;
+
+const Nav = styled.nav`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 ${(props) => props.theme.spacing.medium};
+  width: 375px;
+
+  @media (min-width: 768px) {
+    width: 768px;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0;
+    width: 1280px;
+  }
+`;
+
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: end;
+  font-family: 'Inter', sans-serif;
+`;
+
+const Logo = styled.img`
+  margin: ${(props) => props.theme.spacing.small};
+  height: 32px;
+
+  @media (min-width: 768px) {
+    height: 53px;
+  }
+`;
+
+const Title = styled.p`
+  margin: 0;
+  font-weight: ${(props) => props.theme.fontWeight.light};
+  color: ${(props) => props.theme.colors.background};
+  font-size: ${(props) => props.theme.fontSizes.medium};
+  line-height: ${(props) => props.theme.spacing.xlarge};
+`;
+
+const Highlight = styled.span`
+  font-weight: ${(props) => props.theme.fontWeight.medium};
+  color: ${(props) => props.theme.colors.secondary};
+`;
+
+const BurgerMenu = styled.div`
+  position: relative;
+  display: flex;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+`;
+
+const BurgerButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  img {
+    height: ${(props) => props.theme.spacing.large};
+  }
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #333;
+  color: ${(props) => props.theme.colors.background};
+  border-radius: ${(props) => props.theme.borderRadius.medium};
+  box-shadow: 0 4px 6px #d1d1d1;
+  opacity: 0.9;
+  z-index: 50;
+  width: 200px;
+`;
+
+const DropdownContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: ${(props) => props.theme.spacing.medium};
+  gap: ${(props) => props.theme.spacing.medium};
+`;
+
+const DropdownLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: ${(props) => props.theme.spacing.ultrasmall};
+  text-decoration: none;
+  color: ${(props) => props.theme.colors.background};
+  padding: ${(props) => props.theme.spacing.small};
+  border-radius: ${(props) => props.theme.borderRadius.small};
+  width: 100%;
+
+  &:hover {
+    background: #444;
+  }
+`;
+
+const NavLinks = styled.div`
+  display: none;
+  gap: ${(props) => props.theme.spacing.large};
+  height: 24px;
+  font-size: ${(props) => props.theme.fontSizes.medium};
+  font-family: 'Inter', sans-serif;
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
+`;
+
+const StyledLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: ${(props) => props.theme.spacing.ultrasmall};
+  text-decoration: none;
+  color: ${(props) => props.theme.colors.background};
+  font-weight: ${(props) => props.theme.fontWeight.light};
+`;

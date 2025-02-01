@@ -1,10 +1,12 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+
+import fetchArtworks from '@/api/artworks';
+import SearchResults from '@/components/SearchResults';
 import { FavoritesProvider } from '@/contexts/FavoritesContext';
 import { SearchProvider } from '@/contexts/SearchContext';
-import SearchResults from '@/components/SearchResults';
-import '@testing-library/jest-dom';
-import fetchArtworks from '@/api/artworks';
 
 jest.mock('@/api/artworks');
 

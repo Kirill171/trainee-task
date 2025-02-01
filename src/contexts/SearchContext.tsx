@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
+
 import { type SearchResponse } from '@/types';
 
 type SearchContextType = {
