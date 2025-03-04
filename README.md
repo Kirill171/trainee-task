@@ -1,5 +1,7 @@
 # Tестовое задание Modsen Art Museum
 
+## Deploy - https://trainee-task.vercel.app/
+
 ## Содержание
 
 - [Техническое задание](#Техническое-задание)
